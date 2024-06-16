@@ -16,6 +16,10 @@ app.conf.beat_schedule = {
         'task': 'app.tasks.add',
         'schedule': crontab(minute='*/5'),
     },
+    'executar-tarefa-a-cada-2-minutos': {
+        'task': 'app.tasks.add_2',
+        'schedule': crontab(minute='*/2'),
+    },
 }
 
 app.autodiscover_tasks()

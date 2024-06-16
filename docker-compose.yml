@@ -11,7 +11,6 @@ services:
       - "8000:8000"
     environment:
       - DEBUG=1
-      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
       - CELERY_BROKER=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWD}@rabbitmq:5672/
       - CELERY_BACKEND=rpc://
     depends_on:

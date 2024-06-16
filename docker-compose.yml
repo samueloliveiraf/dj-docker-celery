@@ -12,10 +12,11 @@ services:
     environment:
       - DEBUG=1
       - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
-      - CELERY_BROKER=redis://redis:6379/0
-      - CELERY_BACKEND=redis://redis:6379/0
+      - CELERY_BROKER=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWD}@rabbitmq:5672/
+      - CELERY_BACKEND=rpc://
     depends_on:
-      - redis
+      - postgres
+      - rabbitmq
 
   celery:
     build: .
@@ -24,11 +25,11 @@ services:
     volumes:
       - .:/usr/src/app/
     environment:
-      - CELERY_BROKER=redis://redis:6379/0
-      - CELERY_BACKEND=redis://redis:6379/0
+      - CELERY_BROKER=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWD}@rabbitmq:5672/
+      - CELERY_BACKEND=rpc://
     depends_on:
       - django
-      - redis
+      - rabbitmq
 
   celery_beat:
     build: .
@@ -37,13 +38,37 @@ services:
     volumes:
       - .:/usr/src/app/
     environment:
-      - CELERY_BROKER=redis://redis:6379/0
-      - CELERY_BACKEND=redis://redis:6379/0
+      - CELERY_BROKER=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWD}@rabbitmq:5672/
+      - CELERY_BACKEND=rpc://
     depends_on:
-      - redis
+      - rabbitmq
       - django
       - celery
 
-  redis:
-    image: "redis:alpine"
-    container_name: redis
+  postgres:
+    image: postgres:latest
+    container_name: db_postgres
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWD}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  rabbitmq_data:
+  postgres_data:

@@ -2,3 +2,6 @@ Django>=3.0,<4.0
 celery
 celery[redis]
 django-celery-beat
+python-decouple
+prettyconf
+psycopg2-binary

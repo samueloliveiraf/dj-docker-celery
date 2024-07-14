@@ -1,41 +1,18 @@
 from __future__ import absolute_import, unicode_literals
 import logging
+import subprocess
 
 from celery import shared_task
-
-from .models import Product
 
 
 logger = logging.getLogger(__name__)
 
 
 @shared_task
-def add():
-    logger.info("Tarefa 'add' iniciada.")
-    produtos = Product.objects.all()
-    logger.info(f"Produtos encontrados: {produtos.count()}")
+def executar_codigo_externo(caminho_script):
+    try:
+        result = subprocess.run(['python', caminho_script], check=True, capture_output=True, text=True)
+        print(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print(f"Erro ao executar o script: {e.stderr}")
 
-    for produto in produtos:
-        logger.info(f"Verificando produto: {produto.id} - {produto.name}")
-        if produto.quantity == 0:
-            logger.info(f"Produto {produto.id} - {produto.name} está com quantidade 0. Desativando.")
-            produto.active = False
-            produto.save()
-            logger.info(f"Produto {produto.id} - {produto.name} desativado e salvo.")
-    logger.info("Tarefa 'add' concluída.")
-
-
-@shared_task
-def add_2():
-    logger.info("Tarefa 'add_2' iniciada.")
-    produtos = Product.objects.all()
-    logger.info(f"Produtos encontrados: {produtos.count()}")
-
-    for produto in produtos:
-        logger.info(f"Verificando produto: {produto.id} - {produto.name}")
-        if produto.quantity == 0:
-            logger.info(f"Produto {produto.id} - {produto.name} está com quantidade 0. Desativando.")
-            produto.active = False
-            produto.save()
-            logger.info(f"Produto {produto.id} - {produto.name} desativado e salvo.")
-    logger.info("Tarefa 'add_2' concluída.")

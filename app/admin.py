@@ -1,6 +1,5 @@
 from django.contrib import admin
+from .models import TarefaExterna
 
-from app.models import Product
 
-
-admin.site.register(Product)
+admin.site.register(TarefaExterna)

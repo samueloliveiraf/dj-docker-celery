@@ -126,7 +126,7 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER', 'amqp://user:password@rabbitmq:5672/')
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER', f'amqp://{config('RABBITMQ_USER')}:{config('RABBITMQ_PASSWD')}@rabbitmq:5672/')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_BACKEND', 'rpc://')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
